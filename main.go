@@ -2,10 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"time"
-
-	"encoding/json"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -15,6 +14,14 @@ type ChartData struct {
 	ID      int32     `json:"id"`
 	Data    float32   `json:"data"`
 	Created time.Time `json:"created"`
+}
+
+// Response struct
+type Response struct {
+	Result struct {
+		MQ2Data   []ChartData `json:"mq2"`
+		MQ135Data []ChartData `json:"mq135"`
+	} `json:"result"`
 }
 
 func main() {
