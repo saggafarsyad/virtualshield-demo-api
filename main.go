@@ -5,14 +5,16 @@ import (
 	"fmt"
 	"time"
 
+	"encoding/json"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 // ChartData struct
 type ChartData struct {
-	ID      int32
-	Data    float32
-	Created time.Time
+	ID      int32     `json:"id"`
+	Data    float32   `json:"data"`
+	Created time.Time `json:"created"`
 }
 
 func main() {
@@ -43,7 +45,9 @@ func main() {
 		err = rows.Scan(&id, &data, &created)
 		checkErr(err)
 		row := ChartData{id, data, created}
-		fmt.Println(row)
+		// Print to JSON
+		response, _ := json.Marshal(row)
+		fmt.Println(string(response))
 	}
 }
 
