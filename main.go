@@ -30,32 +30,42 @@ func main() {
 	checkErr(err)
 	// Close database on finished
 	defer db.Close()
-	// Prepare statement
-	stmt, err := db.Prepare("INSERT `virtualshield_demo`.`data_mq135` SET data=?")
+
+	insertData(db, "data_mq135", 23.34)
+	insertData(db, "data_mq2", 15.79)
+
+	var res Response
+	res.Result.MQ2Data = queryLatestData(db, "data_mq2", 0)
+	res.Result.MQ135Data = queryLatestData(db, "data_mq135", 0)
+
+	response, _ := json.Marshal(res)
+	fmt.Println(string(response))
+}
+
+func insertData(db *sql.DB, tableName string, data float32) {
+	// Prepare insert statement
+	stmt, err := db.Prepare("INSERT `" + tableName + "` SET data=?")
 	checkErr(err)
 	// Execute statement
-	res, err := stmt.Exec(1)
+	_, err = stmt.Exec(data)
 	checkErr(err)
-	// Get Id of latest data
-	id, err := res.LastInsertId()
+}
+
+func queryLatestData(db *sql.DB, tableName string, timestamp int64) []ChartData {
+	// Prepare query statement
+	stmt, err := db.Prepare("SELECT * FROM `" + tableName + "` WHERE UNIX_TIMESTAMP(created) > ?")
 	checkErr(err)
-	// Query data
-	stmt, err = db.Prepare("SELECT * FROM data_mq135 WHERE id=?")
+	// Execute Query
+	rows, err := stmt.Query(timestamp)
 	checkErr(err)
-	rows, err := stmt.Query(id)
-	checkErr(err)
-	// Scan rows
+	// Scan Rows
+	var dataset []ChartData
 	for rows.Next() {
-		var id int32
-		var data float32
-		var created time.Time
-		err = rows.Scan(&id, &data, &created)
-		checkErr(err)
-		row := ChartData{id, data, created}
-		// Print to JSON
-		response, _ := json.Marshal(row)
-		fmt.Println(string(response))
+		row := ChartData{}
+		rows.Scan(&row.ID, &row.Data, &row.Created)
+		dataset = append(dataset, row)
 	}
+	return dataset
 }
 
 func checkErr(err error) {
