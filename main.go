@@ -26,6 +26,13 @@ type Response struct {
 	} `json:"result"`
 }
 
+// ErrorResponse struct
+type ErrorResponse struct {
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message"`
+	ErrorCode  string `json:"error_code"`
+}
+
 func routeIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, "{\"status\": \"ok\"}")
