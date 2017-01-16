@@ -33,6 +33,8 @@ type ErrorResponse struct {
 	ErrorCode  string `json:"error_code"`
 }
 
+var db *sql.DB
+
 func routeIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, "{\"status\": \"ok\"}")
