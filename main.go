@@ -2,11 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/julienschmidt/httprouter"
 )
 
 // ChartData struct
@@ -24,6 +26,11 @@ type Response struct {
 	} `json:"result"`
 }
 
+func routeIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprint(w, "{\"status\": \"ok\"}")
+}
+
 func main() {
 	// Open database
 	db, err := sql.Open("mysql", "root:root@/virtualshield_demo?parseTime=true")
@@ -31,15 +38,11 @@ func main() {
 	// Close database on finished
 	defer db.Close()
 
-	insertData(db, "data_mq135", 23.34)
-	insertData(db, "data_mq2", 15.79)
-
-	var res Response
-	res.Result.MQ2Data = queryLatestData(db, "data_mq2", 0)
-	res.Result.MQ135Data = queryLatestData(db, "data_mq135", 0)
-
-	response, _ := json.Marshal(res)
-	fmt.Println(string(response))
+	// Init Router
+	router := httprouter.New()
+	router.GET("/", routeIndex)
+	log.Println("Listening to port 8080")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
 func insertData(db *sql.DB, tableName string, data float32) {
