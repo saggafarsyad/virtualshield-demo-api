@@ -35,6 +35,12 @@ type ErrorResponse struct {
 	ErrorCode  string `json:"error_code"`
 }
 
+// SuccessResponse struct
+type SuccessResponse struct {
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message"`
+}
+
 var db *sql.DB
 
 func routeIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
