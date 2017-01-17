@@ -48,6 +48,27 @@ func routeIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	fmt.Fprint(w, "{\"status\": \"ok\"}")
 }
 
+func routePush(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	// Read parameters
+	dataMq135, err := strconv.ParseFloat(r.FormValue("getValue_mq135"), 32)
+	if err != nil {
+		writeErrorResponse(w, err, 400, "Invalid MQ135 Data", "INVALID_MQ135_DATA")
+		return
+	}
+	dataMq2, err := strconv.ParseFloat(r.FormValue("getValue_mq2"), 32)
+	if err != nil {
+		writeErrorResponse(w, err, 400, "Invalid MQ2 Data", "INVALID_MQ2_DATA")
+		return
+	}
+	log.Println("dataMq135:", dataMq135)
+	log.Println("dataMq2:", dataMq2)
+	// Insert to database
+	insertData("data_mq135", float32(dataMq135))
+	insertData("data_mq2", float32(dataMq2))
+	// Write success response
+	writeSuccessResponse(w, "Success")
+}
+
 func main() {
 	// Open database
 	var err error
@@ -59,6 +80,7 @@ func main() {
 	// Init Router
 	router := httprouter.New()
 	router.GET("/", routeIndex)
+	router.POST("/data", routePush)
 	log.Println("Listening to port 8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
