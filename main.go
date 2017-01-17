@@ -129,7 +129,7 @@ func writeErrorResponse(w http.ResponseWriter, err error, statusCode int, messag
 	// Setup header
 	w.Header().Set("Content-Type", "application/json")
 	// Write response
-	w.WriteHeader(http.StatusBadRequest)
+	w.WriteHeader(statusCode)
 	fmt.Fprint(w, string(errResponseJSON))
 }
 
