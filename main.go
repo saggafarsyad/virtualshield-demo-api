@@ -62,7 +62,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
-func insertData(db *sql.DB, tableName string, data float32) {
+func insertData(tableName string, data float32) {
 	// Prepare insert statement
 	stmt, err := db.Prepare("INSERT `" + tableName + "` SET data=?")
 	checkErr(err)
@@ -71,7 +71,7 @@ func insertData(db *sql.DB, tableName string, data float32) {
 	checkErr(err)
 }
 
-func queryLatestData(db *sql.DB, tableName string, timestamp int64) []ChartData {
+func queryLatestData(tableName string, timestamp int64) []ChartData {
 	// Prepare query statement
 	stmt, err := db.Prepare("SELECT * FROM `" + tableName + "` WHERE UNIX_TIMESTAMP(created) > ?")
 	checkErr(err)
