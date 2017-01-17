@@ -89,6 +89,16 @@ func queryLatestData(tableName string, timestamp int64) []ChartData {
 	return dataset
 }
 
+func writeSuccessResponse(w http.ResponseWriter, message string) {
+	response := SuccessResponse{200, message}
+	responseJSON, _ := json.Marshal(response)
+	// Setup header
+	w.Header().Set("Content-Type", "application/json")
+	// Write response
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, string(responseJSON))
+}
+
 func writeErrorResponse(w http.ResponseWriter, err error, statusCode int, message string, errorCode string) {
 	log.Println("[ERROR]", err)
 	// Create error response
