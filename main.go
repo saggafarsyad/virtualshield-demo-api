@@ -20,8 +20,8 @@ type ChartData struct {
 	Created time.Time `json:"created"`
 }
 
-// Response struct
-type Response struct {
+// ChartResponse struct
+type ChartResponse struct {
 	Result struct {
 		MQ2Data   []ChartData `json:"mq2"`
 		MQ135Data []ChartData `json:"mq135"`
