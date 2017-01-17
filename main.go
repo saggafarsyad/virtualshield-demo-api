@@ -50,7 +50,8 @@ func routeIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 func main() {
 	// Open database
-	db, err := sql.Open("mysql", "root:root@/virtualshield_demo?parseTime=true")
+	var err error
+	db, err = sql.Open("mysql", "root:root@/virtualshield_demo?parseTime=true")
 	checkErr(err)
 	// Close database on finished
 	defer db.Close()
