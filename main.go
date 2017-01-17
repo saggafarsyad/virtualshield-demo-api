@@ -69,6 +69,27 @@ func routePush(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	writeSuccessResponse(w, "Success")
 }
 
+func routeGetChart(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	// Get latest timestamp
+	queryParams := r.URL.Query()
+	var timestamp int64
+	timestamp, err := strconv.ParseInt(queryParams.Get("timestamp"), 10, 64)
+	if err != nil {
+		timestamp = 0
+	}
+	log.Println("Latest Data Timestamp:", timestamp)
+	// Preparing response
+	var chartData ChartResponse
+	// Query MQ135 Chart data
+	chartData.Result.MQ135Data = queryLatestData("data_mq135", timestamp)
+	chartData.Result.MQ2Data = queryLatestData("data_mq2", timestamp)
+	// Convert chart data to string json
+	chartJSON, _ := json.Marshal(chartData)
+	// Write response
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprint(w, string(chartJSON))
+}
+
 func main() {
 	// Open database
 	var err error
@@ -81,6 +102,7 @@ func main() {
 	router := httprouter.New()
 	router.GET("/", routeIndex)
 	router.POST("/data", routePush)
+	router.GET("/chart", routeGetChart)
 	log.Println("Listening to port 8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
