@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -91,9 +92,16 @@ func routeGetChart(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 }
 
 func main() {
+	// Get datasource string from env
+	var datasource string
+	datasource = os.Getenv("VIRTUALSHIELD_DATASOURCE")
+	if datasource == "" {
+		datasource = "root:root@/virtualshield_demo?parseTime=true"
+	}
+	log.Println(datasource)
 	// Open database
 	var err error
-	db, err = sql.Open("mysql", "root:root@/virtualshield_demo?parseTime=true")
+	db, err = sql.Open("mysql", datasource)
 	checkErr(err)
 	// Close database on finished
 	defer db.Close()
