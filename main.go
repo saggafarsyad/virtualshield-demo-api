@@ -27,6 +27,7 @@ type ChartResponse struct {
 		MQ2Data   []ChartData `json:"mq2"`
 		MQ135Data []ChartData `json:"mq135"`
 	} `json:"result"`
+	LastCreated int64 `json:"last_created"`
 }
 
 // ErrorResponse struct
@@ -84,6 +85,13 @@ func routeGetChart(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 	// Query MQ135 Chart data
 	chartData.Result.MQ135Data = queryLatestData("data_mq135", timestamp)
 	chartData.Result.MQ2Data = queryLatestData("data_mq2", timestamp)
+	// If no data return
+	if len(chartData.Result.MQ135Data) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	// Set timestamp
+	chartData.LastCreated = chartData.Result.MQ135Data[len(chartData.Result.MQ135Data)-1].Created.Unix()
 	// Convert chart data to string json
 	chartJSON, _ := json.Marshal(chartData)
 	// Write response
