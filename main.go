@@ -126,7 +126,7 @@ func insertData(tableName string, data float32) {
 
 func queryLatestData(tableName string, timestamp int64) []ChartData {
 	// Prepare query statement
-	stmt, err := db.Prepare("SELECT * FROM `" + tableName + "` WHERE UNIX_TIMESTAMP(created) > ?")
+	stmt, err := db.Prepare("SELECT * FROM `" + tableName + "` WHERE UNIX_TIMESTAMP(created) > ? ORDER BY created ASC")
 	checkErr(err)
 	// Execute Query
 	rows, err := stmt.Query(timestamp)
