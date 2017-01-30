@@ -95,6 +95,9 @@ func routeGetChart(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 	// Convert chart data to string json
 	chartJSON, _ := json.Marshal(chartData)
 	// Write response
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, string(chartJSON))
 }
